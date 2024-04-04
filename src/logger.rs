@@ -78,22 +78,33 @@ impl Logger {
         let fattest = self.get_fattest_text();
         println!("");
         for count in 0..items.len() + 1 {
-            print!(
-                "{}{}{}",
-                std::iter::repeat(" ")
-                    .take(self.spacing)
-                    .collect::<String>(),
-                ascii[count],
-                std::iter::repeat(" ")
-                    .take(self.spacing)
-                    .collect::<String>()
-            );
+            if count < ascii.len() {
+                print!(
+                    "{}{}{}",
+                    std::iter::repeat(" ")
+                        .take(self.spacing)
+                        .collect::<String>(),
+                    ascii[count],
+                    std::iter::repeat(" ")
+                        .take(self.spacing)
+                        .collect::<String>()
+                );
+            }
             if count == 0 {
                 print!("{}@{}", self.username, self.hostname)
             } else {
                 let item = items[count - 1].clone();
                 let key = item.key;
                 let value = item.value;
+
+                if count >= ascii.len() {
+                    print!(
+                        "{}",
+                        std::iter::repeat(" ")
+                            .take(ascii.clone()[0].len() + self.spacing + 1)
+                            .collect::<String>(),
+                    )
+                }
                 print!(
                     "{}{} -> {}",
                     key,
