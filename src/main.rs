@@ -1,8 +1,9 @@
 mod logger;
 
 fn main() {
-    let logger = logger::Logger::new();
-    let art = logger.get_art();
-    println!("{}", art);
-    println!("Hello, world!");
+    let mut logger = logger::Logger::new();
+    logger.add_item("os", "arch");
+    logger.add_item("krn", "something something");
+    logger.add_item("wm", "dwm");
+    logger.output();
 }
