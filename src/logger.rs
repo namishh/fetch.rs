@@ -17,13 +17,9 @@ pub struct Logger {
 
 impl Logger {
     pub fn new() -> Logger {
-        let default_art = " ▄       ▄
-▄ ▀▄   ▄▀ ▄
-█▄█▀███▀█▄█
-▀█████████▀
- ▄▀     ▀▄ 
-        "
-        .to_string();
+        let default_art = std::fs::read_to_string("art.txt")
+            .expect("no hostname")
+            .to_string();
         let lines: Vec<&str> = default_art.trim_end().split('\n').collect();
 
         let max_length = lines
