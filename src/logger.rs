@@ -1,3 +1,4 @@
+use colored::Colorize;
 use std::vec::Vec;
 use unicode_segmentation::UnicodeSegmentation;
 
@@ -83,14 +84,19 @@ impl Logger {
                     std::iter::repeat(" ")
                         .take(self.spacing)
                         .collect::<String>(),
-                    ascii[count],
+                    ascii[count].blue(),
                     std::iter::repeat(" ")
                         .take(self.spacing)
                         .collect::<String>()
                 );
             }
             if count == 0 {
-                print!("{}@{}", self.username, self.hostname)
+                print!(
+                    "{}{}{}",
+                    self.username.magenta().bold(),
+                    "@".bold(),
+                    self.hostname.magenta().bold()
+                )
             } else {
                 let item = items[count - 1].clone();
                 let key = item.key;
@@ -110,7 +116,7 @@ impl Logger {
                     std::iter::repeat(" ")
                         .take(fattest - key.len())
                         .collect::<String>(),
-                    self.seperator,
+                    self.seperator.magenta().bold(),
                     value
                 )
             }
@@ -124,7 +130,7 @@ impl Logger {
                     std::iter::repeat(" ")
                         .take(self.spacing)
                         .collect::<String>(),
-                    self.art[i]
+                    self.art[i].bright_blue()
                 );
             }
         }
