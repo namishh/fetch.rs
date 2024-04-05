@@ -13,10 +13,11 @@ pub struct Logger {
     username: String,
     hostname: String,
     spacing: usize,
+    seperator: String,
 }
 
 impl Logger {
-    pub fn new() -> Logger {
+    pub fn new(spacing: usize, sep: String) -> Logger {
         let default_art = std::fs::read_to_string("art.txt")
             .expect("no hostname")
             .to_string();
@@ -37,17 +38,19 @@ impl Logger {
             })
             .collect();
 
-        Logger {
+        let logger = Logger {
             art: padded_lines,
             data: Vec::new(),
+            seperator: sep,
             username: std::env::var("USER").expect("no user").to_string(),
             hostname: std::fs::read_to_string("/etc/hostname")
                 .expect("no hostname")
                 .to_string()
                 .trim_end()
                 .to_string(),
-            spacing: 5,
-        }
+            spacing,
+        };
+        logger
     }
 
     fn get_fattest_text(&mut self) -> usize {
@@ -102,11 +105,12 @@ impl Logger {
                     )
                 }
                 print!(
-                    "{}{} -> {}",
+                    "{}{} {} {}",
                     key,
                     std::iter::repeat(" ")
                         .take(fattest - key.len())
                         .collect::<String>(),
+                    self.seperator,
                     value
                 )
             }

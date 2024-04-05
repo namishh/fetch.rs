@@ -1,3 +1,5 @@
+use std::process::Command;
+
 pub fn get_os_name() -> String {
     let readings = std::fs::read_to_string("/etc/os-release")
         .expect("no hostname")
@@ -16,7 +18,7 @@ pub fn get_os_name() -> String {
 }
 
 pub fn get_kernel_name() -> String {
-    let output = std::process::Command::new("uname").arg("-r").output();
+    let output = Command::new("uname").arg("-r").output();
     match output {
         Ok(output) => {
             if output.status.success() {
@@ -54,4 +56,46 @@ pub fn get_uptime() -> String {
     }
 
     slice.to_string()
+}
+
+pub fn get_host() -> String {
+    let mut path = "/sys/devices/virtual/dmi/id/product_name";
+    if std::fs::metadata(path).is_err() {
+        path = "/sys/firmware/devicetree/base/model";
+    }
+
+    std::fs::read_to_string(path)
+        .expect("no way to get host machine")
+        .to_string()
+        .trim_end()
+        .to_string()
+}
+
+pub fn get_window_manager() -> String {
+    let xprop_id = Command::new("xprop")
+        .args(["-root", "-notype", "_NET_SUPPORTING_WM_CHECK"])
+        .output()
+        .expect("err");
+
+    let id = String::from_utf8_lossy(&xprop_id.stdout);
+    let wm_id = id.split(' ').last().unwrap_or_default();
+    let property = Command::new("xprop")
+        .args([
+            "-id",
+            wm_id,
+            "-notype",
+            "-len",
+            "25",
+            "-f",
+            "_NET_WM_NAME",
+            "8t",
+        ])
+        .output()
+        .expect("error");
+    let wm = String::from_utf8_lossy(&property.stdout);
+    let w = wm.split("\n").collect::<Vec<_>>()[0];
+    let w2 = w.split(" ").collect::<Vec<_>>();
+    let w3 = w2.last().expect("error");
+
+    w3[1..w3.len() - 1].to_string()
 }
